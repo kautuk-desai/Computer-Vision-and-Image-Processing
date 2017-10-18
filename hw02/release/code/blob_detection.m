@@ -1,24 +1,29 @@
-function[] = blob_detection(img_path)
-
-img = imread(img_path);
+function[] = blob_detection(img)
 
 grayscale_img = im2double(rgb2gray(img));
 
 [height, width] = size(grayscale_img);
 
 k = 1.5;
-num_of_levels = 10;
-sigma = 2;
+num_of_levels = 7;
+sigma = 3;
 
 tic
 fprintf('Downsample image, keep the filter size same: \n');
-scale_space_1 = downsample_img(grayscale_img, k, sigma, num_of_levels);
+scale_space = downsample_img(grayscale_img, k, sigma, num_of_levels);
+toc
+
+tic
+fprintf('Implementing Difference of Gaussian filter... \n');
+% scale_space = downsample_img_with_DoG(grayscale_img, k, sigma, num_of_levels);
 toc
 
 tic
 fprintf('Change the filter size, Keep image size same: \n');
-% scale_space_2 = increase_filter_size(grayscale_img, k, sigma, num_of_levels);
+% scale_space = increase_filter_size(grayscale_img, k, sigma, num_of_levels);
 toc
+
+pause(0.1);
 
 % perform non maximum suppression
 non_max_suppression = zeros(height, width, num_of_levels);
@@ -26,7 +31,7 @@ non_max_suppression = zeros(height, width, num_of_levels);
 % In some cases, the colfilt function can perform the same operation much faster.
 for i = 1:num_of_levels
     % non_max_suppression(:,:,i) = colfilt(scale_space_1(:,:,i), [3,3],'sliding', @max);
-    non_max_suppression(:,:,i) = ordfilt2(scale_space_1(:,:,i), 3^2, ones(3));
+    non_max_suppression(:,:,i) = ordfilt2(scale_space(:,:,i), 3^2, ones(3));
 end
 
 % perform non maximum suppression between scale spaces. compare the current
@@ -37,9 +42,9 @@ for i = 1:num_of_levels
 end
 % if the suppressed scale space is same as the scale space of sampling then
 % keep the max suppression same else make it 0
-non_max_suppression = non_max_suppression .* (non_max_suppression == scale_space_1);
+non_max_suppression = non_max_suppression .* (non_max_suppression == scale_space);
 
-threshold = 0.008;
+threshold = 0.0035;
 cx = [];
 cy = [];
 rad = [];
@@ -54,6 +59,12 @@ for i = 1:num_of_levels
     rad = cat(1, rad, radii);
 end
 
+
 show_all_circles(img, cx, cy, rad);
 
+% Print parameters value
+fprintf('k: %0.2f \n', k);
+fprintf('num of levels: %d \n', num_of_levels);
+fprintf('sigma: %0.2f \n', sigma);
+fprintf('threshold: %0.4f \n', threshold);
 end

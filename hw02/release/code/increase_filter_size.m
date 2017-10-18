@@ -20,6 +20,12 @@ for i = 1:num_of_levels
     
     scale_space(:,:,i) = filtered_img;
     % imshow(scale_space(:,:,i));
+    % fprintf('Iteration num: %d \n', i);
+    
+    pause(0.1); % this is because my machine takes too much time to evaluate
+    % the increase filter size execution. But if i debug the code line by line
+    % it does not take much time. So realized to give a small delay. Stupid
+    % implentation but it worked.
 end
 
 end
