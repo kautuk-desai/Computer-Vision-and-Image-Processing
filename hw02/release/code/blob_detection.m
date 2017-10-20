@@ -30,7 +30,7 @@ non_max_suppression = zeros(height, width, num_of_levels);
 % nlfilter can take a long time to process large images.
 % In some cases, the colfilt function can perform the same operation much faster.
 for i = 1:num_of_levels
-    % non_max_suppression(:,:,i) = colfilt(scale_space_1(:,:,i), [3,3],'sliding', @max);
+    % non_max_suppression(:,:,i) = colfilt(scale_space(:,:,i), [3,3],'sliding', @max);
     non_max_suppression(:,:,i) = ordfilt2(scale_space(:,:,i), 3^2, ones(3));
 end
 
