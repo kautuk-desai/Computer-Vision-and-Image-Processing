@@ -5,7 +5,7 @@ grayscale_img = im2double(rgb2gray(img));
 [height, width] = size(grayscale_img);
 
 k = 1.5;
-num_of_levels = 7;
+num_of_levels = 2;
 sigma = 3;
 
 tic
@@ -44,7 +44,7 @@ end
 % keep the max suppression same else make it 0
 non_max_suppression = non_max_suppression .* (non_max_suppression == scale_space);
 
-threshold = 0.0035;
+threshold = 0.003;
 cx = [];
 cy = [];
 rad = [];

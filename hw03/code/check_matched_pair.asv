@@ -1,0 +1,28 @@
+function[] = check_matched_pair(matches, left_img, right_img, left_img_width)
+
+left_img_row_matches = matches(:,2);
+left_img_col_matches = matches(:, 3);
+right_img_row_matches = matches(:, 5);
+right_img_col_matches = matches(:, 6);
+
+plot_r = [left_img_row_matches, right_img_row_matches];
+plot_c = [left_img_col_matches, right_img_col_matches + left_img_width];
+
+figure;
+imshow([left_img right_img]);
+hold on;
+title('Mapping of closest features');
+hold on;
+
+plot(left_img_col_matches, left_img_row_matches,'ys'); %mark features from the 1st im
+plot(right_img_col_matches + left_img_width, right_img_row_matches, 'ys'); %mark features from the 2nd img
+
+num_of_matches = length(matches);
+
+for i = 1:num_of_matches             %draw lines connecting matched features
+    plot(plot_c(i,:), plot_r(i,:));
+end
+
+
+end
+
