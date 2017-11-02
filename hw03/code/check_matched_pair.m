@@ -20,7 +20,7 @@ plot(left_img_col_matches, left_img_row_matches,'ys');
 % features position of right image
 plot(right_img_col_matches + left_img_width, right_img_row_matches, 'ys');
 
-num_of_matches = length(matches);
+num_of_matches = size(matches, 1);
 
 % connect the matching pairs with lines
 for i = 1:num_of_matches
