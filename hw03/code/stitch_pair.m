@@ -3,6 +3,7 @@ function [] = stitch_pair()
 % declare the variables that are going to be used.
 neighbor_size = 15;
 num_of_descriptor_limit = 200;
+% the threshold of which points can be considered as inlier
 threshold = 7;
 
 original_left_img = imread('../data/part1/uttower/left.jpg');

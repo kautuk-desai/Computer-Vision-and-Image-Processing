@@ -2,9 +2,9 @@
 %% load images and match files for the first example
 %%
 
-I1 = imread('house1.jpg');
-I2 = imread('house2.jpg');
-matches = load('house_matches.txt'); 
+I1 = imread('../data/part2/house1.jpg');
+I2 = imread('../data/part2/house2.jpg');
+matches = load('../data/part2/house_matches.txt'); 
 % this is a N x 4 file where the first two numbers of each row
 % are coordinates of corners in the first image and the last two
 % are coordinates of corresponding corners in the second image: 
