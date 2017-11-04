@@ -18,29 +18,20 @@ if normalize_coordinates == 1
     img2_coordinates = img2_transformed_coordinates;
 end
 
+A = ones(num_of_matches, 9);
+
 u1 = img1_coordinates(:,1);
 v1 = img1_coordinates(:,2);
 u2 = img2_coordinates(:,1);
 v2 = img2_coordinates(:,2);
 
-A = ones(num_of_matches, 9);
 A(:, 1:8) = [u2.*u1, u2.*v1, u2, v2.*u1, v2.*v1, v2, u1, v1];
-
-% solve the homogenous linear system
+% olving the homogenous linear system
 [U, S, V] = svd(A);
 X = V(:,end);
 F = reshape(X, [3, 3]);
 
-% enforce the rank-2 constraint
-[U, S, V] = svd(F);
-% set the smallest singular value to zero
-S(end) = 0;
-% Recompute F
-fundamental_matrix = U*S*V';
+fundamental_matrix = [];
 
-if normalize_coordinates == 1
-    % Transform fundamental matrix back to original units
-    fundamental_matrix = img_2_transformed_matrix' * fundamental_matrix * img_1_transformed_matrix;
-end
 
 end

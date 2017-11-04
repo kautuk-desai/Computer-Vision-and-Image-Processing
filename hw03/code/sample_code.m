@@ -30,7 +30,7 @@ pause;
 %%
 
 % first, fit fundamental matrix to the matches
-F = fit_fundamental(matches); % this is a function that you should write
+F = fit_fundamental(matches, 1); % this is a function that you should write
 L = (F * [matches(:,1:2) ones(N,1)]')'; % transform points from 
 % the first image to get epipolar lines in the second image
 
