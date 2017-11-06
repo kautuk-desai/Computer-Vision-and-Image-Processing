@@ -11,8 +11,8 @@ img1_coordinates = matches(:, 1:2);
 img2_coordinates = matches(:, 3:4);
 
 if normalize_coordinates == 1
-    [img_1_transformed_matrix, img1_transformed_coordinates] = normalized_algorithm(matches(:, 1:2));
-    [img_2_transformed_matrix, img2_transformed_coordinates] = normalized_algorithm(matches(:, 3:4));
+    [img_1_transformed_matrix, img1_transformed_coordinates] = normalized_algorithm(img1_coordinates);
+    [img_2_transformed_matrix, img2_transformed_coordinates] = normalized_algorithm(img2_coordinates);
     
     img1_coordinates = img1_transformed_coordinates;
     img2_coordinates = img2_transformed_coordinates;
