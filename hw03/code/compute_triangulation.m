@@ -43,7 +43,6 @@ fprintf('Mean Residual of Img 1: %0.4f \n', mean(img1_distance));
 fprintf('Mean Residual of Img 2: %0.4f \n', mean(img2_distance));
 
 %% plot traingulation
-%{
 figure;
 axis equal;
 hold on;
@@ -55,6 +54,5 @@ xlabel('x');
 ylabel('y');
 zlabel('z');
 axis equal;
-%}
 
 end
