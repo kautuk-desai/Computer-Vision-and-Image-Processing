@@ -111,8 +111,8 @@ for i = 1:output_img_size
     if(stitched_img(i) == 0)
         stitched_img(i) = right_transformed_img(i);
     elseif(stitched_img(i) ~= 0 && right_transformed_img(i) ~= 0)
-        % stitched_img(i) = left_transformed_img(i)/2 + right_transformed_img(i)/2;
-        stitched_img(i) = max(left_transformed_img(i), right_transformed_img(i));
+        stitched_img(i) = left_transformed_img(i)/2 + right_transformed_img(i)/2;
+        % stitched_img(i) = max(left_transformed_img(i), right_transformed_img(i));
     end
 end
 

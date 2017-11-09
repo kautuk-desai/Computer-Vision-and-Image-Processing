@@ -2,15 +2,16 @@
 %% load images and match files for the first example
 %%
 % 
-I1 = imread('../data/part2/house1.jpg');
-I2 = imread('../data/part2/house2.jpg');
-matches = load('../data/part2/house_matches.txt');
+% I1 = imread('../data/part2/house1.jpg');
+% I2 = imread('../data/part2/house2.jpg');
+% matches = load('../data/part2/house_matches.txt');
+% is_house_img = 1;
 
 % library image
-% I1 = imread('../data/part2/library1.jpg');
-% I2 = imread('../data/part2/library2.jpg');
-% matches = load('../data/part2/library_matches.txt');
-% is_house_img = 0;
+I1 = imread('../data/part2/library1.jpg');
+I2 = imread('../data/part2/library2.jpg');
+matches = load('../data/part2/library_matches.txt');
+is_house_img = 0;
 
 % this is a N x 4 file where the first two numbers of each row
 % are coordinates of corners in the first image and the last two
@@ -71,6 +72,7 @@ num_of_iterations = N;
 ransac_num_matches = 4;
 min_inlier_ratio = 0.3;
 threshold = 10;
+max_num_of_inliers = 0;
 
 inlier_per_iteration = zeros(num_of_iterations, 1);
 F_per_inliers = {};
@@ -86,22 +88,17 @@ for i = 1 : num_of_iterations
     
     F = fit_fundamental(inlier_matches, 1);
     
-    L = (F * [matches(:,1:2) ones(N,1)]')'; % transform points from
-    % the first image to get epipolar lines in the second image
-    
-    % find points on epipolar lines L closest to matches(:,3:4)
-    L = L ./ repmat(sqrt(L(:,1).^2 + L(:,2).^2), 1, 3); % rescale the line;
+    %% compute Residual error. The one implemented in part 1 was not generalized so had to do it differently here
+    L = (F * [matches(:,1:2) ones(N,1)]')';
+    L = L ./ repmat(sqrt(L(:,1).^2 + L(:,2).^2), 1, 3);
     pt_line_dist = sum(L .* [matches(:,3:4) ones(N,1)],2);
-    
     residual_errors = abs(pt_line_dist);
-    
     inlier_points = find(residual_errors < threshold);
     
     %record the number of inliers
     inlier_per_iteration(i) = length(inlier_points);
     
-    %keep track of any models that generated an acceptable numbers of
-    %inliers. This collection can be parsed later to find the best fit
+    % store all fundamental matrices that have inliers more than the ratio
     current_inlier_ratio = inlier_per_iteration(i) / N;
     
     if current_inlier_ratio >=  min_inlier_ratio
@@ -120,7 +117,7 @@ L = (F_optimal * [matches(:,1:2) ones(N,1)]')';
 L = L ./ repmat(sqrt(L(:,1).^2 + L(:,2).^2), 1, 3);
 pt_line_dist = sum(L .* [matches(:,3:4) ones(N,1)],2);
 residual_errors = abs(pt_line_dist);
-
+ 
 optimal_inlier_points = find(residual_errors < threshold);
 fprintf('Number of inliers (RANSAC): %d \n', length(optimal_inlier_points));
 
