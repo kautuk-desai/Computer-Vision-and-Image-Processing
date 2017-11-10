@@ -29,7 +29,7 @@ A(:, 1:8) = [u2.*u1, u2.*v1, u2, v2.*u1, v2.*v1, v2, u1, v1];
 % solve the homogenous linear system
 [U, S, V] = svd(A);
 X = V(:,end);
-F = reshape(X, [3, 3]);
+F = reshape(X, [3, 3])';
 
 % enforce the rank-2 constraint
 [U, S, V] = svd(F);

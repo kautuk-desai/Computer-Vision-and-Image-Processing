@@ -43,16 +43,17 @@ fprintf('Mean Residual of Img 1: %0.4f \n', mean(img1_distance));
 fprintf('Mean Residual of Img 2: %0.4f \n', mean(img2_distance));
 
 %% plot traingulation
-figure;
-axis equal;
-hold on;
-plot3(-triangulated_points(:,1), triangulated_points(:,2), triangulated_points(:,3), '.r');
-plot3(-img1_cam_center(1), img1_cam_center(2), img1_cam_center(3),'*g');
-plot3(-img2_cam_center(1), img2_cam_center(2), img2_cam_center(3),'*b');
-grid on;
-xlabel('x');
-ylabel('y');
-zlabel('z');
-axis equal;
+% figure;
+% axis equal;
+% hold on;
+% rotate3d on;
+% plot3(-triangulated_points(:,1), triangulated_points(:,2), triangulated_points(:,3), '.r');
+% plot3(-img1_cam_center(1), img1_cam_center(2), img1_cam_center(3),'*g');
+% plot3(-img2_cam_center(1), img2_cam_center(2), img2_cam_center(3),'*b');
+% grid on;
+% xlabel('x');
+% ylabel('y');
+% zlabel('z');
+% axis equal;
 
 end

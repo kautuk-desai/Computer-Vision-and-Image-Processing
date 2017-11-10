@@ -70,12 +70,8 @@ line([pt1(:,1) pt2(:,1)]', [pt1(:,2) pt2(:,2)]', 'Color', 'g');
 %% RANSAC to estimate fundamental matrix
 num_of_iterations = N;
 ransac_num_matches = 4;
-min_inlier_ratio = 0.3;
-threshold = 10;
+threshold = 0.9;
 max_num_of_inliers = 0;
-
-inlier_per_iteration = zeros(num_of_iterations, 1);
-F_per_inliers = {};
 
 for i = 1 : num_of_iterations
     %select a random subset of points
@@ -96,21 +92,18 @@ for i = 1 : num_of_iterations
     inlier_points = find(residual_errors < threshold);
     
     %record the number of inliers
-    inlier_per_iteration(i) = length(inlier_points);
+    inlier_per_iteration = length(inlier_points);
     
-    % store all fundamental matrices that have inliers more than the ratio
-    current_inlier_ratio = inlier_per_iteration(i) / N;
-    
-    if current_inlier_ratio >=  min_inlier_ratio
+    if inlier_per_iteration >  max_num_of_inliers
         img1_inlier_matches = matches(inlier_points, 1:2);
         img2_inlier_matches = matches(inlier_points, 3:4);
         inlier_matches = [img1_inlier_matches img2_inlier_matches];
-        F_per_inliers{i} = fit_fundamental(inlier_matches, 1);
+        F_max_inliers = fit_fundamental(inlier_matches, 1);
+        max_num_of_inliers = inlier_per_iteration;
     end
 end
 
-best_iteration = find(inlier_per_iteration == max(inlier_per_iteration));
-F_optimal = F_per_inliers{best_iteration(1)};
+F_optimal = F_max_inliers;
 
 % compute residual error for optimal F
 L = (F_optimal * [matches(:,1:2) ones(N,1)]')';
