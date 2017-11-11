@@ -2,16 +2,16 @@
 %% load images and match files for the first example
 %%
 % 
-% I1 = imread('../data/part2/house1.jpg');
-% I2 = imread('../data/part2/house2.jpg');
-% matches = load('../data/part2/house_matches.txt');
-% is_house_img = 1;
+I1 = imread('../data/part2/house1.jpg');
+I2 = imread('../data/part2/house2.jpg');
+matches = load('../data/part2/house_matches.txt');
+is_house_img = 1;
 
 % library image
-I1 = imread('../data/part2/library1.jpg');
-I2 = imread('../data/part2/library2.jpg');
-matches = load('../data/part2/library_matches.txt');
-is_house_img = 0;
+% I1 = imread('../data/part2/library1.jpg');
+% I2 = imread('../data/part2/library2.jpg');
+% matches = load('../data/part2/library_matches.txt');
+% is_house_img = 0;
 
 % this is a N x 4 file where the first two numbers of each row
 % are coordinates of corners in the first image and the last two
@@ -35,7 +35,6 @@ line([matches(:,1) matches(:,3) + size(I1,2)]', matches(:,[2 4])', 'Color', 'r')
 %% display second image with epipolar lines reprojected
 %% from the first image
 %%
-
 % first, fit fundamental matrix to the matches
 F = fit_fundamental(matches, 1); % this is a function that you should write
 % F_unnormalized = fit_fundamental(matches, 0);
@@ -68,9 +67,9 @@ line([matches(:,3) closest_pt(:,1)]', [matches(:,4) closest_pt(:,2)]', 'Color', 
 line([pt1(:,1) pt2(:,1)]', [pt1(:,2) pt2(:,2)]', 'Color', 'g');
 
 %% RANSAC to estimate fundamental matrix
-num_of_iterations = N;
-ransac_num_matches = 4;
-threshold = 0.9;
+num_of_iterations = 10000;
+ransac_num_matches = 8;
+threshold = 0.7;
 max_num_of_inliers = 0;
 
 for i = 1 : num_of_iterations
@@ -110,12 +109,13 @@ L = (F_optimal * [matches(:,1:2) ones(N,1)]')';
 L = L ./ repmat(sqrt(L(:,1).^2 + L(:,2).^2), 1, 3);
 pt_line_dist = sum(L .* [matches(:,3:4) ones(N,1)],2);
 residual_errors = abs(pt_line_dist);
- 
+
+fprintf('Residual Error Threshold: %0.2f \n', threshold);
 optimal_inlier_points = find(residual_errors < threshold);
 fprintf('Number of inliers (RANSAC): %d \n', length(optimal_inlier_points));
 
 mean_of_residual_error = mean(residual_errors);
-fprintf('Mean Residual (RANSAC) = %0.4f \n', mean_of_residual_error);
+fprintf('Mean Residual (RANSAC): %0.4f \n', mean_of_residual_error);
 
 
 %% Compute triangulation and plot

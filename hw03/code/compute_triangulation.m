@@ -10,6 +10,7 @@ if is_house_img ~= 1
     img2_cam_matrix = load('../data/part2/library2_camera.txt');
 end
 
+% required for 3d plot
 img1_cam_center = get_camera_center(img1_cam_matrix);
 img2_cam_center = get_camera_center(img2_cam_matrix);
 
