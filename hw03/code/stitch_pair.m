@@ -19,25 +19,25 @@ right_image = im2double(rgb2gray(original_right_img));
 [left_img_row_idx, left_img_col_idx, left_img_feature_desc] = feature_descriptor(left_image, left_img_row_idx, left_img_col_idx, neighbor_size);
 [right_img_row_idx, right_img_col_idx, right_img_feature_desc] = feature_descriptor(right_image, right_img_row_idx, right_img_col_idx, neighbor_size);
 
-left_img_corners = size(left_img_row_idx, 1);
-right_img_corners = size(right_img_row_idx, 1);
+num_left_img_corners = size(left_img_row_idx, 1);
+num_right_img_corners = size(right_img_row_idx, 1);
 
-feature_match_dist = zeros(left_img_corners, right_img_corners);
+% select only corner points obtained from feature descriptor
+left_img_feature_desc = left_img_feature_desc(1:num_left_img_corners,:);
+right_img_feature_desc = right_img_feature_desc(1:num_right_img_corners, :);
 
-for i = 1:left_img_corners
-    for j = 1:right_img_corners
-        feature_match_dist(i, j) = dist2(left_img_feature_desc(i, :), right_img_feature_desc(j, :));
-    end
-end
+% compute the eclidean mean squared distance between each points
+feature_match_dist = dist2(left_img_feature_desc, right_img_feature_desc);
 
-num_of_descriptor_limit = min([num_of_descriptor_limit, left_img_corners, right_img_corners]);
+% find the minimum distance between points and select those feature matches
 feature_matches = [];
-
 for i = 1:num_of_descriptor_limit
     [row_id, col_id] = find(feature_match_dist == min(min(feature_match_dist)));
     if(length(row_id) == 1)
         temp_matches = [row_id, left_img_row_idx(row_id), left_img_col_idx(row_id), col_id, right_img_row_idx(col_id), right_img_col_idx(col_id), min(min(feature_match_dist))];
         feature_matches = cat(1, feature_matches, temp_matches);
+        % put high values so that they are not selected for the next
+        % iteration
         feature_match_dist(row_id, :) = 100;
         feature_match_dist(:, col_id) = 100;
     end
@@ -48,43 +48,79 @@ end
 % title('Mapping of Harris features');
 
 %% Perform RANSAC to find the inliers and the corresponding homograpy matrix.
-num_of_descriptor_limit = size(feature_matches, 1);
-ransac_num_matches = 4;
-n = 1;
+num_of_matches = size(feature_matches, 1);
+% ransac_num_matches = 4;
+% n = 1;
+% 
+% while(n < num_of_matches)
+%     % randomly pick 4 points.
+%     if ransac_num_matches == 4
+%         inlier_points = randsample(num_of_matches, ransac_num_matches);
+%     end
+%     
+%     homography_matrix = compute_homography_matrix(feature_matches, inlier_points, ransac_num_matches);
+%     
+%     [num_of_inliers, inlier_points, residual_error] = compute_residual_error(homography_matrix, feature_matches, num_of_matches, threshold);
+%     
+%     % this is to check if the inliers are less than 10 then the optimal
+%     % value is obtained at 4.
+%     if(num_of_inliers < 10)
+%         ransac_num_matches = 4;
+%     else
+%         ransac_num_matches = num_of_inliers;
+%         n = n+1;
+%     end
+% end
+% 
+% fprintf('Number of inliers (RANSAC): %d \n', num_of_inliers);
+% 
+% mean_of_residual_error = mean(residual_error);
+% fprintf('Mean Residual (RANSAC) = %0.4f \n', mean_of_residual_error);
 
-while(n < num_of_descriptor_limit)
-    % randomly pick 4 points.
-    if ransac_num_matches == 4
-        inlier_points = randsample(num_of_descriptor_limit, ransac_num_matches);
-    end
+
+num_of_iterations = 1000;
+N = num_of_matches;
+max_num_of_inliers = 0;
+ransac_num_matches = 4;
+mean_of_residual_error = 0;
+
+for i = 1 : num_of_iterations
+    %select a random subset of points
+    inlier_points = randsample(N, ransac_num_matches);
     
     homography_matrix = compute_homography_matrix(feature_matches, inlier_points, ransac_num_matches);
     
-    [num_of_inliers, inlier_points, residual_error] = compute_residual_error(homography_matrix, feature_matches, num_of_descriptor_limit, threshold);
+    [num_of_inliers, inlier_points, residual_error] = compute_residual_error(homography_matrix, feature_matches, num_of_matches, threshold);
     
-    % this is to check if the inliers are less than 10 then the optimal
-    % value is obtained at 4.
-    if(num_of_inliers < 10)
-        ransac_num_matches = 4;
-    else
-        ransac_num_matches = num_of_inliers;
-        n = n+1;
+    %record the number of inliers
+    inlier_per_iteration = length(inlier_points);
+    
+    if inlier_per_iteration >  max_num_of_inliers
+        max_num_of_inliers = inlier_per_iteration;
+        
+        F_max_inliers = homography_matrix;
+        optimal_residual_error = residual_error;
+        optimal_inlier_points = inlier_points;
     end
 end
 
-fprintf('Number of Inliers: %d \n', num_of_inliers);
+homography_matrix = F_max_inliers;
+fprintf('Number of inliers (RANSAC): %d \n', max_num_of_inliers);
 
-mean_of_residual_error = mean(residual_error);
-fprintf('Mean Residual: %0.4f \n', mean_of_residual_error);
+mean_of_residual_error = mean(optimal_residual_error);
+fprintf('Mean Residual (RANSAC) = %0.4f \n', mean_of_residual_error);
 
+% display the optimal matching pairs
+%{
 optimal_feature_matches = [];
 for i = 1:num_of_inliers
     optimal_feature_matches = cat(1, optimal_feature_matches, feature_matches(inlier_points(i), :));
 end
 
-% display the optimal matching pairs
+
 check_matched_pair(optimal_feature_matches, left_image, right_image, size(left_image, 2));
 title('Mapping of Optimal features obatined using RANSAC');
+%}
 
 
 %% Warp the image using the homography matrix obtained
