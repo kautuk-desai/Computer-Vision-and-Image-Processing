@@ -2,16 +2,16 @@
 %% load images and match files for the first example
 %%
 % 
-% I1 = imread('../data/part2/house1.jpg');
-% I2 = imread('../data/part2/house2.jpg');
-% matches = load('../data/part2/house_matches.txt');
-% is_house_img = 1;
+I1 = imread('../data/part2/house1.jpg');
+I2 = imread('../data/part2/house2.jpg');
+matches = load('../data/part2/house_matches.txt');
+is_house_img = 1;
 
 % library image
-I1 = imread('../data/part2/library1.jpg');
-I2 = imread('../data/part2/library2.jpg');
-matches = load('../data/part2/library_matches.txt');
-is_house_img = 0;
+% I1 = imread('../data/part2/library1.jpg');
+% I2 = imread('../data/part2/library2.jpg');
+% matches = load('../data/part2/library_matches.txt');
+% is_house_img = 0;
 
 % this is a N x 4 file where the first two numbers of each row
 % are coordinates of corners in the first image and the last two
