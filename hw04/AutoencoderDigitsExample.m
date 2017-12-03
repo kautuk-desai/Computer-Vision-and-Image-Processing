@@ -1,4 +1,4 @@
-function [] = AutoencoderDigitsExample(xTrainImages, tTrain)
+function [] = AutoencoderDigitsExample(xTrainImages, tTrain, xTestImages, tTest)
 %% Train Stacked Autoencoders for Image Classification
 % This example shows how to use Neural Network Toolbox(TM) autoencoders
 % functionality for training a deep neural network to classify images of
@@ -31,6 +31,7 @@ function [] = AutoencoderDigitsExample(xTrainImages, tTrain)
 
 % Load the training data into memory
 if nargin < 2
+    % matlab's training image data
     [xTrainImages,tTrain] = digitTrainCellArrayData;
 end
 
@@ -214,8 +215,11 @@ imageWidth = 28;
 imageHeight = 28;
 inputSize = imageWidth*imageHeight;
 
-% Load the test images
-[xTestImages,tTest] = digitTestCellArrayData;
+% Load the test data into memory
+if nargin < 2
+    % matlab's test image data
+    [xTestImages,tTest] = digitTestCellArrayData;
+end
 
 % Turn the test images into vectors and put them in a matrix
 xTest = zeros(inputSize,numel(xTestImages));
