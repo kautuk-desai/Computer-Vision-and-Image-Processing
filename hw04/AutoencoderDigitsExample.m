@@ -37,11 +37,11 @@ end
 
 
 % Display some of the training images
-clf
-for i = 1:20
-    subplot(4,5,i);
-    imshow(xTrainImages{i});
-end
+% clf
+% for i = 1:20
+%     subplot(4,5,i);
+%     imshow(xTrainImages{i});
+% end
 
 %%
 % The labels for the images are stored in a 10-by-5000 matrix, where in
@@ -69,7 +69,7 @@ rng('default')
 % Set the size of the hidden layer for the autoencoder. For the autoencoder
 % that you are going to train, it is a good idea to make this smaller than
 % the input size.
-hiddenSize1 = 50;
+hiddenSize1 = 100;
 
 %%
 % The type of autoencoder that you will train is a sparse autoencoder. This
@@ -106,11 +106,11 @@ autoenc1 = trainAutoencoder(xTrainImages,hiddenSize1, ...
 
 %%
 % You can view a diagram of the autoencoder. The autoencoder is comprised
-% of an encoder followed by a decoder. The encoder maps an input to a 
+% of an encoder followed by a decoder. Thaps an input to a 
 % hidden representation, and the decoder attempts to reverse this mapping
 % to reconstruct the original input.
 
-view(autoenc1)
+% view(autoenc1)
 
 %% Visualizing the weights of the first autoencoder
 % The mapping learned by the encoder part of an autoencoder can be useful
@@ -142,7 +142,7 @@ feat1 = encode(autoenc1,xTrainImages);
 % 50, so that the encoder in the second autoencoder learns an even smaller
 % representation of the input data.
 
-hiddenSize2 = 25;
+hiddenSize2 = 50;
 autoenc2 = trainAutoencoder(feat1,hiddenSize2, ...
     'MaxEpochs',100, ...
     'L2WeightRegularization',0.002, ...
@@ -154,13 +154,23 @@ autoenc2 = trainAutoencoder(feat1,hiddenSize2, ...
 % Once again, you can view a diagram of the autoencoder with the
 % |view| function.
 
-view(autoenc2)
+% view(autoenc2)
 
 %%
 % You can extract a second set of features by passing the previous set
 % through the encoder from the second autoencoder.
 
 feat2 = encode(autoenc2,feat1);
+
+% hiddenSize3 = 25;
+% autoenc3 = trainAutoencoder(feat2,hiddenSize3, ...
+%     'MaxEpochs',100, ...
+%     'L2WeightRegularization',0.002, ...
+%     'SparsityRegularization',4, ...
+%     'SparsityProportion',0.1, ...
+%     'ScaleData', false);
+% 
+% feat3 = encode(autoenc3,feat2);
 
 %%
 % The original vectors in the training data had 784 dimensions. After
@@ -179,7 +189,7 @@ softnet = trainSoftmaxLayer(feat2,tTrain,'MaxEpochs',100);
 %%
 % You can view a diagram of the softmax layer with the |view| function.
 
-view(softnet)
+% view(softnet)
 
 %% Forming a stacked neural network
 % You have trained three separate components of a deep neural network in
@@ -187,16 +197,16 @@ view(softnet)
 % networks that you have trained. They are |autoenc1|, |autoenc2|, and
 % |softnet|.
 
-view(autoenc1)
-view(autoenc2)
-view(softnet)
+% view(autoenc1)
+% view(autoenc2)
+% view(softnet)
 
 %%
 % As was explained, the encoders from the autoencoders have been used to
 % extract features. You can stack the encoders from the autoencoders 
 % together with the softmax layer to form a deep network.
 
-deepnet = stack(autoenc1,autoenc2,softnet);
+deepnet = stack(autoenc1,autoenc2, softnet);
 
 %%
 % You can view a diagram of the stacked network with the |view| function.
@@ -256,7 +266,7 @@ deepnet = train(deepnet,xTrain,tTrain);
 % You then view the results again using a confusion matrix.
 
 y = deepnet(xTest);
-plotconfusion(tTest,y);
+plotconfusion(tTest,y, 'Test');
 
 %% Summary
 % This example showed how to train a deep neural network to classify digits
