@@ -69,7 +69,7 @@ rng('default')
 % Set the size of the hidden layer for the autoencoder. For the autoencoder
 % that you are going to train, it is a good idea to make this smaller than
 % the input size.
-hiddenSize1 = 100;
+hiddenSize1 = 200;
 
 %%
 % The type of autoencoder that you will train is a sparse autoencoder. This
@@ -101,7 +101,7 @@ autoenc1 = trainAutoencoder(xTrainImages,hiddenSize1, ...
     'MaxEpochs',100, ...
     'L2WeightRegularization',0.004, ...
     'SparsityRegularization',4, ...
-    'SparsityProportion',0.15, ...
+    'SparsityProportion',0.1, ...
     'ScaleData', false);
 
 %%
@@ -142,7 +142,7 @@ feat1 = encode(autoenc1,xTrainImages);
 % 50, so that the encoder in the second autoencoder learns an even smaller
 % representation of the input data.
 
-hiddenSize2 = 50;
+hiddenSize2 = 100;
 autoenc2 = trainAutoencoder(feat1,hiddenSize2, ...
     'MaxEpochs',100, ...
     'L2WeightRegularization',0.002, ...
@@ -184,7 +184,7 @@ feat2 = encode(autoenc2,feat1);
 % Unlike the autoencoders, you train the softmax layer in a supervised
 % fashion using labels for the training data.
 
-softnet = trainSoftmaxLayer(feat2,tTrain,'MaxEpochs',100);
+softnet = trainSoftmaxLayer(feat2,tTrain,'MaxEpochs',100, 'LossFunction','mse');
 
 %%
 % You can view a diagram of the softmax layer with the |view| function.
